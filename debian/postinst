@@ -13,11 +13,25 @@ case "$1" in
 	if ! getent group ros > /dev/null 2>&1; then
 		addgroup --system ros --quiet
 	fi
+
 	if [ ! -e "/var/lib/ros" ]; then
 		mkdir /var/lib/ros
 	fi
 	chown -R ros:ros /var/lib/ros
         chmod 2775 /var/lib/ros
+
+	if [ ! -e "/var/run/ros" ]; then
+		mkdir /var/run/ros
+	fi
+	chown -R ros:ros /var/run/ros
+        chmod 2775 /var/run/ros
+
+	if [ ! -e "/var/log/ros" ]; then
+		mkdir /var/log/ros
+	fi
+	chown -R ros:ros /var/log/ros
+        chmod 2775 /var/log/ros
+
 	if [ "$(id -gn ros)" = "nogroup" ]; then
 		usermod -g ros ros
     	fi

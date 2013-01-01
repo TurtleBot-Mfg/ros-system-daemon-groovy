@@ -75,7 +75,12 @@ rosctl_notify () {
     # 	sudo -u turtlebot -i DISPLAY=:0 /usr/bin/notify-send --urgency=normal --expire-time=1000 --icon=turtlebot --category='network.connected' '<b>ROS Launch</b>' "Starting robot on $ROS_IP"
 
     if ! [ -z $NOTIFY_USER ]; then
-        echo "Note to $NOTIFY_USER: $1"
+        if [ $NOTIFY_USER = $USER ]; then
+          if [ -z $DISPLAY ]; then
+            DISPLAY=:0
+          fi
+     	  /usr/bin/notify-send --urgency=normal --expire-time=1000 --icon=ros --category='network.connected' '<b>ROS</b>' "$@"
+        fi
     else
         echo "Notify disabled"
     fi
@@ -98,12 +103,12 @@ rosctl_start () {
     #echo "$DATE: turtlebot-start setting ROS_IP=$ROS_IP" >> $log_file
     ROS_IP="127.0.0.1"
 
-    rosctl_notify "Starting"
+    rosctl_notify "Starting robot on $ROS_IP"
     if [ $USER = "root" ]; then
         echo "Error: rosctl can not currently be run as root"
     elif [ $USER = "ros" ]; then
         echo "$DATE: Starting ROS system daemon"
-        ROS_LOG_DIR=/var/log/ros
+        export ROS_LOG_DIR=/var/log/ros
         if [ -s ${ROS_LAUNCH:-/etc/ros/robot.launch} ]; then
             nohup roslaunch --wait --pid=${ROS_PID:-/var/run/ros/roscore.pid} \
               --port=${ROS_PORT:-11311} ${ROS_LAUNCH:-/etc/ros/robot.launch} >& /dev/null &
@@ -124,7 +129,7 @@ rosctl_start () {
 }
 
 rosctl_stop () {
-    rosctl_notify "Stopping"
+    rosctl_notify "Stopping robot"
     if [ -z $ROSCORE_USER ]; then
         echo "Error: Unable to stop ROS - roscore is not running"
     elif [ $ROSCORE_USER = $USER ]; then

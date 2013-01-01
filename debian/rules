@@ -6,6 +6,8 @@ export DH_ALWAYS_EXCLUDE=CVS:.svn:.git
 #override_dh_installinit:
 #	dh_installinit --name=roscore-electric
 #
+override_dh_installlogrotate:
+	dh_installlogrotate --name=ros
 
 %:
 	dh $@
