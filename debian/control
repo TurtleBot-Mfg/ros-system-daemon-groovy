@@ -1,0 +1,18 @@
+Source: ros-system-daemon-groovy
+Section: science
+Priority: extra
+Maintainer: I Heart Engineering <code@iheartengineering.com>
+Build-Depends: debhelper (>= 5), cdbs
+Standards-Version: 3.9.3
+Homepage: https://github.com/turtlebot-mfg/ros-system-daemon-groovy
+
+Package: ros-system-daemon-groovy
+Architecture: all
+Depends: ${misc:Depends}, python, daemontools, build-essential, ros-groovy-ros, ros-groovy-ros-comm, adduser
+Provides: ros-system-daemon
+Description: ROS Groovy system daemon
+ This package will start ROS at bootup
+ .
+ Run ROS as user ros and group ros
+Conflicts: ros-system-daemon-electric
+Wg-Rosdistro: groovy

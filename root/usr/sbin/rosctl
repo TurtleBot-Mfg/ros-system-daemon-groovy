@@ -1,0 +1,181 @@
+#!/bin/bash
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2013, I Heart Engineering
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+#  * Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials provided
+#    with the distribution.
+#  * Neither the name of I Heart Engineering nor the names of its
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Inspired by apachectl
+
+DATE=`date`
+NOTIFY_USER=`ps -C gnome-session --no-headers -o user | head -1`
+
+# Load Config
+if [ -s /etc/ros/setup.bash ]; then
+    echo "$DATE: rosctl using setup file /etc/ros/setup.bash"
+    source /etc/ros/setup.bash
+elif ! [ -z "$ROS_DISTRO" ]; then
+    echo "$DATE: rosctl using setup file /opt/ros/$ROS_DISTRO/setup.bash"
+    source /opt/ros/$ROS_DISTRO/setup.bash
+elif [ -s /opt/ros/groovy/setup.bash ]; then
+    echo "$DATE: rosctl using setup file /opt/ros/groovy/setup.bash"
+    source /opt/ros/groovy/setup.bash
+else
+    echo "$DATE: rosctl can not locate setup.bash"
+    exit 1
+fi
+
+# Load Environmental Varibles
+ROS_ENVVARS="/etc/ros/envvars"
+if test -f ROS_ENVVARS; then
+  . $ROS_ENVVARS
+fi
+
+####
+# ENVVARS
+####
+# ROS_PORT
+# ROS_LAUNCH
+# ROS_PID
+
+
+rosctl_usage () {
+    echo "Usage: $0 start|stop|restart|status"
+    echo "       $0 [-h|--help]"
+    exit 1
+}
+
+rosctl_notify () {
+    # 	sudo -u turtlebot -i DISPLAY=:0 /usr/bin/notify-send --urgency=normal --expire-time=1000 --icon=turtlebot --category='network.connected' '<b>ROS Launch</b>' "Starting robot on $ROS_IP"
+
+    if ! [ -z $NOTIFY_USER ]; then
+        echo "Note to $NOTIFY_USER: $1"
+    else
+        echo "Notify disabled"
+    fi
+}
+
+rosctl_check_roscore () {
+    ROSCORE_PID=`pgrep -f "roslaunch.*core"`
+    if ! [ -z $ROSCORE_PID ]; then
+        ROSCORE_USER=`ps -p $ROSCORE_PID --no-headers -o user`
+    fi
+}
+
+rosctl_start () {
+    if ! [ -z $ROSCORE_PID ]; then
+        echo "Error: Unable to start ROS - roscore ($ROSCORE_PID) already running as $ROSCORE_USER"
+        exit 1
+    fi
+
+    #ROS_IP=`turtlebot-network ip`
+    #echo "$DATE: turtlebot-start setting ROS_IP=$ROS_IP" >> $log_file
+    ROS_IP="127.0.0.1"
+
+    rosctl_notify "Starting"
+    if [ $USER = "root" ]; then
+        echo "Error: rosctl can not currently be run as root"
+    elif [ $USER = "ros" ]; then
+        echo "$DATE: Starting ROS system daemon"
+        ROS_LOG_DIR=/var/log/ros
+        if [ -s ${ROS_LAUNCH:-/etc/ros/robot.launch} ]; then
+            nohup roslaunch --wait --pid=${ROS_PID:-/var/run/ros/roscore.pid} \
+              --port=${ROS_PORT:-11311} ${ROS_LAUNCH:-/etc/ros/robot.launch} >& /dev/null &
+        else
+            nohup roslaunch --core --pid=${ROS_PID:-/var/run/ros/roscore.pid} \
+              --port=${ROS_PORT:-11311} >& /dev/null &
+        fi
+    else
+        echo "$DATE: Starting ROS as user $USER"
+	if [ -z $ROSCORE_PID ]; then
+            nohup roslaunch --core \
+              --port=${ROS_PORT:-11311} >& /dev/null &
+	else
+            nohup roslaunch --core --pid=${ROS_PID} \
+              --port=${ROS_PORT:-11311} >& /dev/null &
+        fi
+    fi
+}
+
+rosctl_stop () {
+    rosctl_notify "Stopping"
+    if [ -z $ROSCORE_USER ]; then
+        echo "Error: Unable to stop ROS - roscore is not running"
+    elif [ $ROSCORE_USER = $USER ]; then
+        for i in $( rosnode list ); do
+            rosnode kill $i >& /dev/null
+        done
+        killall roslaunch >& /dev/null
+        echo "$DATE: Stopping ROS"
+    else 
+        echo "Error: Unable to stop ROS - roscore ($ROSCORE_PID) running as $ROSCORE_USER"
+    fi
+}
+
+rosctl_restart () {
+    rosctl_stop
+    sleep 1
+    rosctl_check_roscore
+    rosctl_start
+}
+
+rosctl_status () {
+    echo "ROS Status"
+    echo "----------------"
+    echo "roscore"
+    ROSCORE_PID=`pgrep -f "roslaunch.*core"`
+    if [ -z $ROSCORE_PID ]; then
+        echo "  State: Stopped"
+    else
+        echo "  State: Started"
+        echo "  PID:   $ROSCORE_PID"
+        echo "  User:  $ROSCORE_USER"
+    fi
+}
+
+if [ $# != 1 ] || [ -z $1 ] || [ $1 = "-h" ] || [ $1 = "--help" ] ; then
+    rosctl_usage
+elif [ $1 = "start" ] || [ $1 = "stop" ] || [ $1 = "restart" ] || [ $1 = "status" ]; then
+    CMD=$1
+    rosctl_check_roscore
+    if [ $CMD = "start" ]; then
+        rosctl_start
+    elif [ $CMD = "stop" ]; then
+        rosctl_stop
+    elif [ $CMD = "restart" ]; then
+        rosctl_restart
+    elif [ $CMD = "status" ]; then
+        rosctl_status
+    fi
+else
+    echo "Error: Unknown command '$1'"
+    echo
+    rosctl_usage
+fi
+exit 0

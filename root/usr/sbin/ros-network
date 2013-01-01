@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2008, I Heart Engineering
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+#  * Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials provided
+#    with the distribution.
+#  * Neither the name of I Heart Engineering nor the names of its
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+import dbus
+import sys
+import socket
+import struct
+import os
+
+NMDeviceType = {
+    'NM_DEVICE_TYPE_UNKNOWN': 0,
+    'NM_DEVICE_TYPE_ETHERNET': 1,
+    'NM_DEVICE_TYPE_WIFI': 2,
+    'NM_DEVICE_TYPE_UNUSED1': 3,
+    'NM_DEVICE_TYPE_UNUSED2': 4,
+    'NM_DEVICE_TYPE_BT': 5,
+    'NM_DEVICE_TYPE_OLPC_MESH': 6,
+    'NM_DEVICE_TYPE_WIMAX': 7,
+    'NM_DEVICE_TYPE_MODEM': 8,
+    'NM_DEVICE_TYPE_INFINIBAND': 9,
+    'NM_DEVICE_TYPE_BOND': 10,
+    'NM_DEVICE_TYPE_VLAN': 11,
+}
+
+
+if len(sys.argv) != 2 or (sys.argv[1] != "interface" and sys.argv[1] != "ip" and sys.argv[1] != "ssid") :
+    print "Usage: %s ip"%sys.argv[0]
+    print "       %s interface"%sys.argv[0]
+    print "       %s ssid"%sys.argv[0]
+    sys.exit(0)
+
+command = sys.argv[1]
+
+# Check if autoconfig is disabled
+if command == "ip":
+    if os.environ.has_key('ROS_IP'):
+        print os.environ['ROS_IP']
+        sys.exit(0)
+
+if command == "interface":
+    if os.environ.has_key('ROS_INTERFACE'):
+        print os.environ['ROS_INTERFACE']
+        sys.exit(0)
+
+try:
+    bus = dbus.SystemBus()
+    nm_proxy = bus.get_object("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager")
+    nm_props = dbus.Interface(nm_proxy, "org.freedesktop.DBus.Properties")
+    active = nm_props.Get("org.freedesktop.NetworkManager", "ActiveConnections")
+except dbus.exceptions.DBusException as e:
+    if command == "interface":
+        print "lo"
+    if command == "ip":
+        print "127.0.0.1"
+    sys.exit(1)
+
+
+for conn in active:
+    conn_proxy = bus.get_object("org.freedesktop.NetworkManager", conn)
+    conn_props = dbus.Interface(conn_proxy, "org.freedesktop.DBus.Properties")
+
+    # Check if the current connection is the default
+    default = conn_props.Get("org.freedesktop.NetworkManager.Connection.Active", "Default")
+    if default == 1:
+        dev_path = conn_props.Get("org.freedesktop.NetworkManager.Connection.Active", "Devices")[0]
+        dev_proxy = bus.get_object("org.freedesktop.NetworkManager", dev_path)
+        dev_props = dbus.Interface(dev_proxy, "org.freedesktop.DBus.Properties")
+        if command == "interface":
+            print dev_props.Get("org.freedesktop.NetworkManager.Device", "Interface")
+            sys.exit(os.EX_OK)
+
+        if command == "ip":
+            ip4_path = dev_props.Get("org.freedesktop.NetworkManager.Device", "Ip4Config")
+            ip4_proxy = bus.get_object("org.freedesktop.NetworkManager", ip4_path)
+            ip4_props = dbus.Interface(ip4_proxy, "org.freedesktop.DBus.Properties")
+            ip4_iaddress = ip4_props.Get("org.freedesktop.NetworkManager.IP4Config", "Addresses")[0][0]
+            ip4_paddress = struct.pack('!I',socket.htonl(ip4_iaddress))
+            print socket.inet_ntoa(ip4_paddress)
+            sys.exit(os.EX_OK)
+
+        elif command == "ssid":
+	    if (dev_props.Get("org.freedesktop.NetworkManager.Device", "DeviceType") == NMDeviceType['NM_DEVICE_TYPE_WIFI']):
+                ap_path = dev_props.Get("org.freedesktop.NetworkManager.Device.Wireless", "ActiveAccessPoint")
+                ap_proxy = bus.get_object("org.freedesktop.NetworkManager", ap_path)
+                ap_props = dbus.Interface(ap_proxy, "org.freedesktop.DBus.Properties")
+                ssid = ap_props.Get("org.freedesktop.NetworkManager.AccessPoint","Ssid", byte_arrays=True)
+                print ssid
+                sys.exit(os.EX_OK)
+            else:
+                sys.exit(os.EX_UNAVAILABLE)
+    
+if command == "interface":
+    print "lo"
+if command == "ip":
+    print "127.0.0.1"

@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DH_ALWAYS_EXCLUDE=CVS:.svn:.git
+
+#override_dh_installinit:
+#	dh_installinit --name=roscore-electric
+#
+
+%:
+	dh $@

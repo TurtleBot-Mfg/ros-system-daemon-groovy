@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+case "$1" in
+    'configure')
+        if ! getent passwd ros >/dev/null; then
+          adduser --disabled-password --quiet --system \
+            --no-create-home --home=/var/lib/ros --shell /bin/sh \
+            --gecos "Robot Operating System" --group ros
+          adduser --quiet ros dialout
+        fi
+	if ! getent group ros > /dev/null 2>&1; then
+		addgroup --system ros --quiet
+	fi
+	if [ ! -e "/var/lib/ros" ]; then
+		mkdir /var/lib/ros
+	fi
+	chown -R ros:ros /var/lib/ros
+        chmod 2775 /var/lib/ros
+	if [ "$(id -gn ros)" = "nogroup" ]; then
+		usermod -g ros ros
+    	fi
+    ;;
+
+    *)
+    ;;
+esac
+#DEBHELPER#
