@@ -1,3 +1,15 @@
+ros-system-daemon-groovy (0.0.1ubuntu2) precise; urgency=low
+
+  * 
+
+ -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 09:53:21 -0500
+
+ros-system-daemon-groovy (0.0.1ubuntu1) precise; urgency=low
+
+  * fixing changelog
+
+ -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 06:57:42 -0500
+
 ros-system-daemon-groovy (0.0.1) UNRELEASED; urgency=low
 
   * init

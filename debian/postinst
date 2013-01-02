@@ -20,11 +20,11 @@ case "$1" in
 	chown -R ros:ros /var/lib/ros
         chmod 2775 /var/lib/ros
 
-	if [ ! -e "/var/run/ros" ]; then
-		mkdir /var/run/ros
+	if [ ! -e "/run/ros" ]; then
+		mkdir /run/ros
 	fi
-	chown -R ros:ros /var/run/ros
-        chmod 2775 /var/run/ros
+	chown -R ros:ros /run/ros
+        chmod 2775 /run/ros
 
 	if [ ! -e "/var/log/ros" ]; then
 		mkdir /var/log/ros
