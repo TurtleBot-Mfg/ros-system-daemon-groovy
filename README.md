@@ -12,5 +12,5 @@ This package provides functionality for automatically starting/stopping ROS
 Special Thanks
 ----
 The program ```rosctl``` was inspired by apachectl
-Package was incluenced by the alternate aproach used by
+Package was influenced by the alternate approach used by
 Thomas Moulard <thomas.moulard@gmail.com> on ros_comm_upstart

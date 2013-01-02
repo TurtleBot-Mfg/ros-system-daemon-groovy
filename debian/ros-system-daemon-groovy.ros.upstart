@@ -1,0 +1,23 @@
+description "ROS System Daemon"
+author "I Heart Engineering <code@iheartengineering.com>"
+
+#start on (local-filesystems and net-device-up IFACE!=lo)
+start on net-device-up IFACE!=lo
+stop on platform-device-changed
+
+console log
+#respawn
+
+script
+echo "ROS:$IFACE"
+if ! [ -z $IFACE ] && [ "$IFACE" != "lo" ]; then
+
+    ROS_IP=`ros-network ip`
+    logger -is -t $UPSTART_JOB -p user.info "Starting IFACE = $IFACE"
+    setuidgid ros rosctl start
+fi
+end script
+
+pre-stop script
+    setuidgid ros rosctl stop
+end script
