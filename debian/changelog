@@ -1,3 +1,9 @@
+ros-system-daemon-groovy (0.0.1ubuntu4) precise; urgency=low
+
+  * Fixing /var/run/ros creation issue
+
+ -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 17:25:08 -0500
+
 ros-system-daemon-groovy (0.0.1ubuntu3) precise; urgency=low
 
   * Fixed rosctl when $USER !def and hopefully fixed /var/run/ros issues
