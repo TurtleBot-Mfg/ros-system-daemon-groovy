@@ -50,7 +50,7 @@ These packages will provide *ros-system-upstart-groovy* for dependency managemen
 * Rotation currently done by copying and truncating the active log
 
 Note: 01 Jan 2013 Sending SIGHUP to the ROS does not cause it to write to a new log.  
-https://github.com/ros/ros_comm/issues/45
+<https://github.com/ros/ros_comm/issues/45>
 
 ## Files
 ### /usr/sbin/rosctl
