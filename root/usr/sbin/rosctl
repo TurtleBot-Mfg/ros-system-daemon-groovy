@@ -66,6 +66,8 @@ fi
 # ROS_PORT
 # ROS_LAUNCH
 # ROS_PID
+# ROS_IP
+# ROS_INTERFACE
 
 
 rosctl_usage () {

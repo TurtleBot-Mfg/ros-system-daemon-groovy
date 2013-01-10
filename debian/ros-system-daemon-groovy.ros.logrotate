@@ -7,7 +7,7 @@
         RUN_ID=`rosparam get /run_id 2>/dev/null`
         # Create a tarball if ROS is no longer using a given log subdirectory
         for i in $( ls /var/log/ros | grep -v \.gz$ ); do
-            if [ $i != "$RUN_ID" ]; then
+            if [ $i != "$RUN_ID" ] && [ -d $i ]; then
                 cd /var/log/ros && tar -zpcf $i.tar.gz $i
             fi
         done
