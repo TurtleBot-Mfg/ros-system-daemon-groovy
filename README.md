@@ -2,18 +2,18 @@
 This package provides functionality for automatically starting/stopping ROS
 
 ## ROS System User
-    Username:           *ros*
-    Home Directory:     ```/var/lib/ros```
-    Group:              *ros*
-    Shell:              ```/bin/sh```
+    Username:           ros
+    Home Directory:     /var/lib/ros
+    Group:              ros
+    Shell:              /bin/sh
 
 *ros* should be a member of group *dialout* to access serial ports.
 
 ```chown -R ros:ros /var/lib/ros```  
 ```chmod 2775 /var/lib/ros```
 
-    ROS Log Dir:        ```/var/log/ros```
-    ROS PID:            ```/var/run/ros/roscore.pid```
+    ROS Log Dir:        /var/log/ros
+    ROS PID:            /var/run/ros/roscore.pid
 
 ## Startup and shutdown
 Startup and shutdown is controlled by an upstart script that can be auto-configured via D-Bus communication with Network Manager. It also supports manual overrides by setting ```ROS_IP``` and ```ROS_INTERFACE``` in ```/etc/ros/setup.bash``` or ```/etc/ros/envvars```. ROS is started when upstart receives a *net-device-up* signal and it is stopped when a network interface stops.
@@ -36,8 +36,8 @@ both packages will provide *ros-system-upstart-groovy* for dependency management
 
 ## System-wide Logging
     Log Dir:            /var/log/ros
-    ```chown -R ros:ros /var/log/ros```
-    ```chmod 2775 /var/log/ros```
+    chown -R ros:ros /var/log/ros
+    chmod 2775 /var/log/ros
 
 ### ros-system-daemon-groovy.ros.logrotate
 * Config file ```/etc/logrotate.d/ros```
