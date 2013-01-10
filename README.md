@@ -10,6 +10,7 @@ Shell:        /bin/sh
 ros should be a member of group *dialout* to access serial ports.
 
 ```chown -R ros:ros /var/lib/ros```
+
 ```chmod 2775 /var/lib/ros```
 
 ROS Log Dir:    /var/log/ros
