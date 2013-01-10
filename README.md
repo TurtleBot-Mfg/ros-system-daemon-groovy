@@ -68,18 +68,18 @@ The PID file will be written to ```ROS_PID``` if it is set or ```/var/run/ros/ro
 
 If ```gnome-session``` is running, the script will attempt to send desktop notifications via ```notify-send``` to the user that is logged in when ROS starts or stops.
 
-#### Sub-commands
-* Start - Start ROS (roscore + default launch file)
-* Stop - Stop ROS (rosnode kill nodes then killall roslaunch)
-* Restart - Start followed by Stop
-* Status - Display the PID and user running ROS
+Sub-commands
+* start - Start ROS (roscore + default launch file)
+* stop - Stop ROS (rosnode kill nodes then killall roslaunch)
+* restart - Start followed by Stop
+* status - Display the PID and user running ROS
 
 In the near future running this as script as root will check/repair directory permissions and re-run itself setuidgid ros. Also, when run as root it should issue a warning and run ```initctl stop ros``` to prevent upstart from respawning. It may also be worth issuing a warning when run as *ros* and ```initctl status ros``` shows that upstart will respawn the process.
 
 ### /usr/sbin/ros-network
 This tool autodetects network settings by querying NetworkManager via D-Bus. Autoconf can be overridden by setting ```ROS_IP``` and ```ROS_INTERFACE```.
 
-#### Sub-commands
+Sub-commands
 * interface - Outputs the primary interface name (wlan0, eth0, etc)
 * ip - Outputs the ipv4 address of the primary network connection
 * ssid - If WiFi connection, provide ssid of access point
