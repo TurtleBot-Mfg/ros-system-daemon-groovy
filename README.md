@@ -2,21 +2,15 @@
 This package provides functionality for automatically starting/stopping ROS
 
 ## ROS System User
-The ISO installer can provide a suggested username but it does not force the user to use this name. Also if we create
-a 'turtlebot' system user and the username chosen in the ISO installer is also 'turtlebot', the installer will crash.
-
-To resolve this, we suggest users install with the username 'turtlebot' and run ROS as the user 'ros'.
-The user 'turtlebot' can launch nodes that connect to the rosmaster run by 'ros'
-
-Username:    ros
+Username:    ```ros```
 Home Directory:    /var/lib/ros
 Group:        ros
 Shell:        /bin/sh
 
-ros should be a member of group 'dialout' to access serial ports.
+ros should be a member of group *dialout* to access serial ports.
 
-chown -R ros:ros /var/lib/ros
-chmod 2775 /var/lib/ros
+```chown -R ros:ros /var/lib/ros```
+```chmod 2775 /var/lib/ros```
 
 ROS Log Dir:    /var/log/ros
 ROS PID:    /var/run/ros/roscore.pid
@@ -24,9 +18,9 @@ ROS PID:    /var/run/ros/roscore.pid
 ## Startup and shutdown
 Currently we have an upstart script that can be auto-configured
 via D-Bus communication with Network Manager. It also supports
-manual overrides by setting ROS_IP and ROS_INTERFACE in
-/etc/ros/setup.bash or /etc/ros/envvars. ROS is started when
-upstart receives a net-device-up signal and it is stopped when
+manual overrides by setting ```ROS_IP``` and ```ROS_INTERFACE``` in
+```/etc/ros/setup.bash``` or ```/etc/ros/envvars```. ROS is started when
+upstart receives a ```net-device-up``` signal and it is stopped when
 a network interface stops.
 
 Future work will resolve the issue where ROS starts connected
@@ -37,15 +31,15 @@ stop/start event.
 For this we plan to separate the upstart scripts into two packages
 * ros-system-upstart-lan-groovy
 * ros-system-upstart-wan-groovy
-both packages will provide ros-system-upstart-groovy for
+both packages will provide ```ros-system-upstart-groovy``` for
 dependency management.
 
 ros-system-daemon-groovy.ros.upstart
-* Config file /etc/init/ros.conf
-* start on net-device-up IFACE!=lo
-* stop on platform-device-changed
-* Check/update ownership & permissions of /var/run/ros
-* Autoconf network ROS_IP=`ros-network ip`
+* Config file ```/etc/init/ros.conf```
+* ```start on net-device-up IFACE!=lo```
+* ```stop on platform-device-changed```
+* Check/update ownership & permissions of ```/var/run/ros```
+* Autoconf network ```ROS_IP=`ros-network ip````
 * Start via 'setuidgid ros rosctl start'
 * Stop via 'setuidgid ros rosctl stop'
 
@@ -55,7 +49,7 @@ chown -R ros:ros /var/log/ros
 chmod 2775 /var/log/ros
 
 ros-system-daemon-groovy.ros.logrotate
-* Config file /etc/logrotate.d/ros
+* Config file ```/etc/logrotate.d/ros```
 * Rotate logs daily *.log -> *.log.1 -> *.log.2 -> etc
 * Compress the previous days logs daily *.log.2 -> *.log.2.gz
 * Keep up to one weeks logs for an active rosmaster
@@ -81,8 +75,8 @@ https://github.com/ros/ros_comm/issues/45
   $ROS_LAUNCH if it exists.
 
   The PID file will be written to $ROS_PID if it is set or
-  /var/run/ros/roscore.pid or if it run as a local user it
-  will be written to ~/.ros/roscore-11311.pid or similar.
+  ```/var/run/ros/roscore.pid``` or if it run as a local user it
+  will be written to ```~/.ros/roscore-11311.pid``` or similar.
 
   If gnome-session is running, the script will attempt to send
   desktop notifications via notify-send to the user that is logged in
