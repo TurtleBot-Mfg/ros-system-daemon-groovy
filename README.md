@@ -23,7 +23,8 @@ Future work will resolve the issue where ROS starts connected to *eth0* and the 
 For this we plan to separate the upstart scripts into two packages
 * *ros-system-upstart-lan-groovy*
 * *ros-system-upstart-wan-groovy*  
-both packages will provide *ros-system-upstart-groovy* for dependency management.
+
+These packages will provide *ros-system-upstart-groovy* for dependency management.
 
 ### ros-system-daemon-groovy.ros.upstart
 * Config file ```/etc/init/ros.conf```
