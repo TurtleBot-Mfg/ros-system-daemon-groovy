@@ -35,9 +35,7 @@
 
 DATE=`date`
 NOTIFY_USER=`ps -C gnome-session --no-headers -o user | head -1`
-if [ -z $USER ]; then
-    USER=`whoami`
-fi
+USER=`id -un`
 
 # Load Config
 if [ -s /etc/ros/setup.bash ]; then
@@ -90,7 +88,7 @@ rosctl_notify () {
 }
 
 rosctl_check_roscore () {
-    ROSCORE_PID=`pgrep -f "roslaunch.*core"`
+    ROSCORE_PID=`pgrep -f "roslaunch.*core" | head -1`
     if ! [ -z $ROSCORE_PID ]; then
         ROSCORE_USER=`ps -p $ROSCORE_PID --no-headers -o user`
     fi
@@ -106,14 +104,14 @@ rosctl_start () {
     #echo "$DATE: turtlebot-start setting ROS_IP=$ROS_IP" >> $log_file
     ROS_IP="127.0.0.1"
 
-    rosctl_notify "Starting robot on $ROS_IP"
+    rosctl_notify "Starting robot on $ROS_IP as $USER"
+    echo "Starting robot on $ROS_IP as $USER"
     if [ "$USER" = "root" ]; then
         echo "Error: rosctl can not currently be run as root"
     elif [ "$USER" = "ros" ]; then
         echo "$DATE: Starting ROS system daemon"
         export ROS_LOG_DIR=/var/log/ros
         if [ -s ${ROS_LAUNCH:-/etc/ros/robot.launch} ]; then
-            echo "Foo!"
             nohup roslaunch --pid=${ROS_PID:-/var/run/ros/roscore.pid} \
               --port=${ROS_PORT:-11311} ${ROS_LAUNCH:-/etc/ros/robot.launch} >& /tmp/ros.log &
         else
@@ -158,7 +156,7 @@ rosctl_status () {
     echo "ROS Status"
     echo "----------------"
     echo "roscore"
-    ROSCORE_PID=`pgrep -f "roslaunch.*core"`
+    ROSCORE_PID=`pgrep -f "roslaunch.*core" | head -1`
     if [ -z $ROSCORE_PID ] ; then
         echo "  State: Stopped"
     else
