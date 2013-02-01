@@ -7,7 +7,7 @@ case "$1" in
         if ! getent passwd ros >/dev/null; then
           adduser --disabled-password --quiet --system \
             --no-create-home --home=/var/lib/ros --shell /bin/sh \
-            --gecos "Robot Operating System" --group ros
+            --gecos "ROS system user" --group ros
           adduser --quiet ros dialout
         fi
 	if ! getent group ros > /dev/null 2>&1; then
