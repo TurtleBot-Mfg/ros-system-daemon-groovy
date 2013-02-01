@@ -66,8 +66,6 @@ fi
 # ROS_PORT
 # ROS_LAUNCH
 # ROS_PID
-# ROS_IP
-# ROS_INTERFACE
 
 
 rosctl_usage () {
@@ -136,9 +134,9 @@ rosctl_start () {
 
 rosctl_stop () {
     rosctl_notify "Stopping robot"
-    if [ -z $ROSCORE_USER ]; then
+    if [ -z $ROSCORE_USER ] ; then
         echo "Error: Unable to stop ROS - roscore is not running"
-    elif [ $ROSCORE_USER = $USER ]; then
+    elif [ $ROSCORE_USER = $USER ] || [ "$USER" = "root" ] ; then
         for i in $( rosnode list ); do
             rosnode kill $i >& /dev/null
         done
@@ -161,7 +159,7 @@ rosctl_status () {
     echo "----------------"
     echo "roscore"
     ROSCORE_PID=`pgrep -f "roslaunch.*core"`
-    if [ -z $ROSCORE_PID ]; then
+    if [ -z $ROSCORE_PID ] ; then
         echo "  State: Stopped"
     else
         echo "  State: Started"
