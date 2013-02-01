@@ -1,29 +1,16 @@
-ros-system-daemon-groovy (0.0.1ubuntu4) precise; urgency=low
+ros-system-daemon-groovy (0.0.3~1.gbpa5d4b7) UNRELEASED; urgency=low
 
-  * Fixing /var/run/ros creation issue
+  ** SNAPSHOT build @a5d4b77279095564067cfa83537add640c6009a6 **
 
- -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 17:25:08 -0500
+  [ lucid ]
+  * UNRELEASED
 
-ros-system-daemon-groovy (0.0.1ubuntu3) precise; urgency=low
+  [ I Heart Engineering ]
 
-  * Fixed rosctl when $USER !def and hopefully fixed /var/run/ros issues
+ -- I Heart Engineering <code@iheartengineering.com>  Fri, 01 Feb 2013 06:13:33 -0500
 
- -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 09:54:43 -0500
+ros-system-daemon-groovy (0.0.2) precise; urgency=low
 
-ros-system-daemon-groovy (0.0.1ubuntu2) precise; urgency=low
+  * Fixing changelog
 
-  * 
-
- -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 09:53:21 -0500
-
-ros-system-daemon-groovy (0.0.1ubuntu1) precise; urgency=low
-
-  * fixing changelog
-
- -- I Heart Engineering <code@iheartengineering.com>  Wed, 02 Jan 2013 06:57:42 -0500
-
-ros-system-daemon-groovy (0.0.1) UNRELEASED; urgency=low
-
-  * init
-
- -- I Heart Engineering <code@iheartengineering.com>  Thu, 06 Dec 2012 04:10:34 -0500
+ -- I Heart Engineering <code@iheartengineering.com>  Fri, 01 Feb 2013 06:11:44 -0500
