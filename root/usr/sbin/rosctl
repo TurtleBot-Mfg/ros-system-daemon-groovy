@@ -100,9 +100,8 @@ rosctl_start () {
         exit 1
     fi
 
-    #ROS_IP=`turtlebot-network ip`
-    #echo "$DATE: turtlebot-start setting ROS_IP=$ROS_IP" >> $log_file
-    ROS_IP="127.0.0.1"
+    ROS_IP=`turtlebot-network ip`
+    echo "$DATE: turtlebot-start setting ROS_IP=$ROS_IP" >> $log_file
 
     rosctl_notify "Starting robot on $ROS_IP as $USER"
     echo "Starting robot on $ROS_IP as $USER"

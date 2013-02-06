@@ -9,8 +9,7 @@ console log
 #respawn
 
 pre-start script
-logger -is -t $UPSTART_JOB -p user.info "Starting IFACE = $IFACE"
-#if ! [ -z $IFACE ] && [ "$IFACE" != "lo" ]; then
+    logger -is -t $UPSTART_JOB -p user.info "Starting IFACE = $IFACE"
     if [ ! -e "/var/run/ros" ]; then
         mkdir /var/run/ros
     fi
@@ -18,9 +17,8 @@ logger -is -t $UPSTART_JOB -p user.info "Starting IFACE = $IFACE"
     chmod 2775 /var/run/ros
 
     ROS_IP=`ros-network ip`
-    logger -is -t $UPSTART_JOB -p user.info "Starting IFACE = $IFACE"
+    logger -is -t $UPSTART_JOB -p user.info "ROS_IP = $ROS_IP"
     exec start-stop-daemon -u ros -c ros -S --exec /usr/sbin/rosctl -- start
-#fi
 end script
 
 post-stop script
