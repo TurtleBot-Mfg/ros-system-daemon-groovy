@@ -101,7 +101,7 @@ rosctl_start () {
     fi
 
     #ROS_IP=`ros-network ip`
-    if [ -z $ROS_IP }; then
+    if [ -z $ROS_IP ]; then
         ROS_IP="127.0.0.1"
     fi
     echo "$DATE: rosctl using ROS_IP={$ROS_IP:-Unknown}" >> $log_file
