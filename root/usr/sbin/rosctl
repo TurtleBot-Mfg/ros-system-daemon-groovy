@@ -54,7 +54,7 @@ fi
 
 # Load Environmental Varibles
 ROS_ENVVARS="/etc/ros/envvars"
-if test -f ROS_ENVVARS; then
+if [ -f $ROS_ENVVARS ]; then
   . $ROS_ENVVARS
 fi
 

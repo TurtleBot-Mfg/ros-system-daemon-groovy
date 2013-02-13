@@ -1,3 +1,22 @@
+ros-system-daemon-groovy (0.0.5ubuntu1) precise; urgency=low
+
+  * 
+
+ -- I Heart Engineering <code@iheartengineering.com>  Sat, 09 Feb 2013 17:12:01 -0500
+
+ros-system-daemon-groovy (0.0.5) precise; urgency=low
+
+  * Fixing d-bus issues
+  * aFixed typoe
+
+ -- I Heart Engineering <code@iheartengineering.com>  Wed, 06 Feb 2013 01:58:09 -0500
+
+ros-system-daemon-groovy (0.0.4) precise; urgency=low
+
+  * Fixed bug with ROS_IP by uncommenting working code. Upstart logging improved
+
+ -- I Heart Engineering <code@iheartengineering.com>  Tue, 05 Feb 2013 21:57:47 -0500
+
 ros-system-daemon-groovy (0.0.3) precise; urgency=low
 
   * Fixed PID detect & user detect
